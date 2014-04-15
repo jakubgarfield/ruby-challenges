@@ -12,12 +12,12 @@ class GuessNumberGame
   def play
     wanted = generate_number
 
-    for i in 1..NUMBER_OF_GUESSES
-      current = guess()
-      if current ==  wanted 
+    NUMBER_OF_GUESSES.times do
+      current_guess = ask_for_guess
+      if current_guess ==  wanted 
         puts "Excellent sir, very well done!"
         break
-      elsif current < wanted
+      elsif current_guess < wanted
         puts "No, no, no, no, no. The number is larger than that."
       else
         puts "Yay, this is way too much."
@@ -29,10 +29,16 @@ class GuessNumberGame
     rand(RESULT_LOWER_BOUND..RESULT_UPPER_BOUND)
   end
 
-  def guess
+  def ask_for_guess
     puts "Try to guess a number between #{RESULT_LOWER_BOUND} and #{RESULT_UPPER_BOUND}"
     gets.chomp.to_i
   end
 end
 
 GuessNumberGame.new.play
+
+# Lessons learned
+# 1) Use long descriptive name
+# 2) Almost never rescue/catch exception (dynamic language)
+# 3) Never use for, use X.times instead or 1..X.eacha
+# 4) VIM - df. - deletes everything until the first occurence of .
