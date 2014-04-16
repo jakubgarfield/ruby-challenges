@@ -91,3 +91,19 @@ describe PrefixCalculator, "#is_operator?" do
   end
 
 end
+
+
+describe PrefixCalculator, "#to_number" do
+  it "converts zero" do
+    PrefixCalculator.new.to_number("0").should eq(0.0)
+  end
+
+  it "converts valid float" do
+    PrefixCalculator.new.to_number("-12.52").should eq(-12.52)
+  end
+
+  it "doesn't convert invalid number" do
+    PrefixCalculator.new.to_number("string_instead_of_a_number").nan?.should be_true
+    PrefixCalculator.new.to_number(" ").nan?.should be_true
+  end
+end
