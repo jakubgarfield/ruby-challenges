@@ -6,14 +6,13 @@
 # 3) calculate the result of an operation
 
 class PrefixCalculator
+  ParseError = Class.new(StandardError)
 
-  INVALID_INPUT_MESSAGE = "Input was not in the correct format."
-  OPERATIONS = 
-  {
-    "+" => lambda { |x, y| x + y },
-    "-" => lambda { |x, y| x - y },
-    "/" => lambda { |x, y| x / y },
-    "*" => lambda { |x, y| x * y },
+  OPERATIONS = {
+    "+" => -> (x, y) { x + y },
+    "-" => -> (x, y) { x - y },
+    "/" => -> (x, y) { x / y },
+    "*" => -> (x, y) { x * y },
   }
 
   def calculate(input)
@@ -22,42 +21,28 @@ class PrefixCalculator
 
     tokens.reverse_each do |token|      
       if is_operator?(token)
-        if result_stack.size < 2
-          result_stack.push(INVALID_INPUT_MESSAGE)
-          break 
-        end
-        
-        first_operand = result_stack.pop
-        second_operand = result_stack.pop
-        result = OPERATIONS[token].call(first_operand, second_operand)
+        raise ParseError if result_stack.size < 2
+        result = OPERATIONS[token].call(result_stack.pop, result_stack.pop)
         result_stack.push(result)
       else
-        operand = to_number(token)
-
-        if operand.nan?
-          result_stack.push(INVALID_INPUT_MESSAGE)
-          break
-        end 
-
-        result_stack.push(operand)
+        result_stack.push(to_number!(token))
       end
     end
 
-    result_stack.size == 1 ? result_stack.pop : INVALID_INPUT_MESSAGE
+    raise ParseError unless result_stack.size == 1
+    result_stack.pop
   end
+
+  
+  private
 
   def tokenize(input)
     input.split
   end
 
-  def to_number(token)
-    if token == "0"
-      0.0
-    elsif token.to_f != 0
-      token.to_f
-    else
-      Float::NAN
-    end
+  def to_number!(token)
+    raise ParseError unless token =~ /^[-]?(0|[1-9][0-9]*)(\.[0-9]+)?([eE][+-]?[0-9]+)?$/
+    token.to_f
   end
 
   def is_operator?(token)
