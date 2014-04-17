@@ -47,7 +47,6 @@ describe PrefixCalculator do
       expect { calculate("+ + + 2 2") }.to raise_error(PrefixCalculator::ParseError)
     end
 
-
     it "doesn't calculate for too many operands" do
       expect { calculate("- 2 2 2 2") }.to raise_error(PrefixCalculator::ParseError)
     end
