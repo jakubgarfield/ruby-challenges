@@ -6,27 +6,17 @@ class WordsProvider
 
   def random_word
     ensure_database
-  
-    words = all_words
-    words[rand(0..words.length)]
+    all_words.sample
   end
 
   def all_words
     ensure_database
-
-    open(DATABASE_PATH, 'r') do |file|
-      file.readlines.map { |i| i.chomp }
-    end
+    File.read(DATABASE_PATH).split
   end
 
 
   private 
   def ensure_database
-    unless File.exist?(DATABASE_PATH) 
-      open(DATABASE_PATH, 'w') do |file|
-        file << open(DATABASE_URL).read
-      end
-    end
+      File.write(DATABASE_PATH, open(DATABASE_URL).read) unless File.exist?(DATABASE_PATH)
   end
-
 end

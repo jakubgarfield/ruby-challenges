@@ -36,17 +36,17 @@ class PrefixCalculator
   
   private
 
-  def tokenize(input)
-    input.split
-  end
+    def tokenize(input)
+      input.split
+    end
 
-  def to_number!(token)
-    raise ParseError unless token =~ /^[-]?(0|[1-9][0-9]*)(\.[0-9]+)?([eE][+-]?[0-9]+)?$/
-    token.to_f
-  end
+    def to_number!(token)
+      raise ParseError unless token =~ /^[-]?(0|[1-9][0-9]*)(\.[0-9]+)?([eE][+-]?[0-9]+)?$/
+      token.to_f
+    end
 
-  def is_operator?(token)
-    OPERATIONS.has_key?(token)
-  end
+    def is_operator?(token)
+      OPERATIONS.has_key?(token)
+    end
 
 end

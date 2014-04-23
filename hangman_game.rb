@@ -1,30 +1,49 @@
 require_relative 'words_provider'
 
 class HangmanGame
-  STARTING_LIFES = 8
+  STARTING_LIVES = 8
 
   def initialize(word = nil)
-    @word = WordsProvider.new.random_word if word.nil? or word.empty?
-    @remaining_lives = STARTING_LIFES
+    @word = word || WordsProvider.new.random_word
+    @remaining_lives = STARTING_LIVES
     @current_guess = "*" * @word.length
+    @game_in_progress = true
   end
 
-  def play!
-    was_successful = evaluate_guess?(ask_for_guess)
-    @remaining_lives -= 1 unless was_successful
+  def play
+    loop do
+      current_guess = ask_for_guess
+      guessed_positions = find_guessed_positions(current_guess)
 
-    if @remaining_lives < 1
-      puts "Oh mine, oh mine oh mine. Your spelling teacher hung himself! This extremelly difficult word was #{@word}."  
-    elsif not @current_guess.include?('*')
-      puts "Marvellously done, sir!"
-    else
-      puts was_successful ? "Excellent, shall we try another one?" : "Yay, shal we try another one?"
-      play!
+      if guessed_positions.length > 0 
+        guessed_positions.each { |position| @current_guess[position] = current_guess }
+        puts "Excellent, shall we try another one?" unless won?
+      else
+        @remaining_lives -= 1 
+        puts "Yay, shall we try another one?" unless lost?
+      end
+
+      break if lost? || won?
     end
+    
+    puts lost? ? "Oh mine, oh mine oh mine. Your spelling teacher hung himself! This extremelly difficult word was #{@word}."
+               : "Marvellously done, sir!"
   end
 
   
   private
+
+  def lost?
+    @remaining_lives < 1
+  end
+
+  def won?
+    !@current_guess.include?('*')
+  end
+
+  def find_guessed_positions(guess)
+    @word.length.times.find_all { |i| @word[i] == guess } 
+  end 
 
   def ask_for_guess
     puts "#{@current_guess} and only #{@remaining_lives} lives remain. Now it's time to show your best!"
@@ -37,16 +56,4 @@ class HangmanGame
       ask_for_guess
     end
   end
-
-  def evaluate_guess?(guess)
-    successful_guess = false
-    @word.split("").each_with_index do |current_char, index|
-      if current_char == guess
-        @current_guess[index] = current_char 
-        successful_guess = true
-      end 
-    end
-    successful_guess
-  end 
-
 end
